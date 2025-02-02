@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
-import { Stage, Layer, Line, Rect, Circle, Ellipse } from 'react-konva';
+import React, { useState, useRef } from 'react';
+import { Stage, Layer, Line, Text, Rect, Circle, Ellipse } from 'react-konva';
 import Header from './Header';
 
 const Canvas = () => {
   const [tool, setTool] = useState('pen'); // pen, rectangle, circle
   const [shapes, setShapes] = useState([]);
   const [lines, setLines] = useState([]);
+  const [texts, setTexts] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [draggable, setDraggable] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [color, setColor] = useState('#000000');
+  const [inputVisible, setInputVisible] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [inputPosition, setInputPosition] = useState({ x: 0, y: 0 });
+  const inputRef = useRef(null);
 
   const handleMouseDown = (e) => {
     setIsDrawing(true);
@@ -18,6 +23,36 @@ const Canvas = () => {
 
     if (tool === 'pen') {
       setLines([...lines, { points: [pos.x, pos.y], color }]);
+    } else if (tool === 'text') {
+      setDraggable(false);
+      setInputPosition({ x: pos.x, y: pos.y });
+      setInputValue('');
+      setInputVisible(true);
+
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputConfirm = () => {
+    if (inputValue.trim() !== '') {
+      setTexts([
+        ...texts,
+        { x: inputPosition.x, y: inputPosition.y, text: inputValue, color },
+      ]);
+    }
+    setInputVisible(false);
+    setInputValue('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleInputConfirm();
     }
   };
 
@@ -115,12 +150,15 @@ const Canvas = () => {
   const clearCanvas = () => {
     setLines([]);
     setShapes([]);
+    setTexts([]);
     setDraggable(false);
   };
 
   const handleMouseEnter = (e) => {
-    const stage = e.target.getStage();
-    stage.container().style.cursor = 'grab';
+    if (draggable) {
+      const stage = e.target.getStage();
+      stage.container().style.cursor = 'grab';
+    }
   };
 
   const handleMouseLeave = (e) => {
@@ -136,6 +174,7 @@ const Canvas = () => {
         setTool={setTool}
         clearCanvas={clearCanvas}
         setColor={setColor}
+        setDraggable={setDraggable}
       />
       <Stage
         width={window.innerWidth}
@@ -152,7 +191,7 @@ const Canvas = () => {
               key={i}
               points={line.points}
               stroke={line.color}
-              strokeWidth={8}
+              strokeWidth={4}
               tension={0.1}
               lineCap="round"
               lineJoin="round"
@@ -210,8 +249,40 @@ const Canvas = () => {
             }
             return null;
           })}
+
+          {texts.map((text, i) => (
+            <Text
+              key={i}
+              x={text.x}
+              y={text.y}
+              text={text.text}
+              fontSize={29}
+              fontFamily="Fredoka"
+              fill={text.color}
+              draggable={draggable}
+            />
+          ))}
         </Layer>
       </Stage>
+      {inputVisible && (
+        <input
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onBlur={handleInputConfirm}
+          onKeyDown={handleKeyDown}
+          className="absolute px-2 py-1 text-2xl text-black"
+          style={{
+            top: inputPosition.y,
+            left: inputPosition.x,
+            position: 'absolute',
+            zIndex: 10,
+            background: 'white',
+            outline: 'none',
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -8,14 +8,24 @@ import { LuPencil } from 'react-icons/lu';
 import { TbOvalVertical } from 'react-icons/tb';
 import { MdDeleteOutline } from 'react-icons/md';
 import { RiDragMove2Fill } from 'react-icons/ri';
-import { PiTextAa } from 'react-icons/pi';
+import { IoText } from 'react-icons/io5';
 
-const Header = ({ tool, color, clearCanvas, setTool, setColor }) => {
+const Header = ({
+  tool,
+  color,
+  clearCanvas,
+  setTool,
+  setColor,
+  setDraggable,
+}) => {
   return (
-    <div className="flex justify-center fixed z-50 m-5">
+    <div className="flex justify-center fixed z-50 m-5 bg-white">
       <div className="flex gap-2 mb-4 border-gray-200 border  rounded-xl shadow-sm p-2">
         <button
-          onClick={() => setTool('drag')}
+          onClick={() => {
+            setTool('drag');
+            setDraggable(true);
+          }}
           className={`p-3 rounded-lg hover:bg-gray-200 hover:cursor-pointer ${
             tool === 'drag' ? 'bg-blue-300' : ''
           }`}
@@ -23,7 +33,10 @@ const Header = ({ tool, color, clearCanvas, setTool, setColor }) => {
           <RiDragMove2Fill />
         </button>
         <button
-          onClick={() => setTool('pen')}
+          onClick={() => {
+            setTool('pen');
+            setDraggable(false);
+          }}
           className={`p-3 rounded-lg hover:bg-gray-200 hover:cursor-pointer ${
             tool === 'pen' ? 'bg-blue-300' : ''
           }`}
@@ -31,7 +44,21 @@ const Header = ({ tool, color, clearCanvas, setTool, setColor }) => {
           <LuPencil />
         </button>
         <button
-          onClick={() => setTool('rectangle')}
+          onClick={() => {
+            setTool('text');
+            setDraggable(false);
+          }}
+          className={`p-3 rounded-lg hover:bg-gray-200 hover:cursor-pointer ${
+            tool === 'text' ? 'bg-blue-300' : ''
+          }`}
+        >
+          <IoText />
+        </button>
+        <button
+          onClick={() => {
+            setTool('rectangle');
+            setDraggable(false);
+          }}
           className={`p-3 rounded-lg hover:bg-gray-200 hover:cursor-pointer ${
             tool === 'rectangle' ? 'bg-blue-300' : ''
           }`}
@@ -39,7 +66,10 @@ const Header = ({ tool, color, clearCanvas, setTool, setColor }) => {
           <RiRectangleLine />
         </button>
         <button
-          onClick={() => setTool('circle')}
+          onClick={() => {
+            setTool('circle');
+            setDraggable(false);
+          }}
           className={`p-3 rounded-lg hover:bg-gray-200 hover:cursor-pointer ${
             tool === 'circle' ? 'bg-blue-300' : ''
           }`}
@@ -47,7 +77,10 @@ const Header = ({ tool, color, clearCanvas, setTool, setColor }) => {
           <FaRegCircle />
         </button>
         <button
-          onClick={() => setTool('ellipse')}
+          onClick={() => {
+            setTool('ellipse');
+            setDraggable(false);
+          }}
           className={`p-3 rounded-lg hover:bg-gray-200 hover:cursor-pointer ${
             tool === 'ellipse' ? 'bg-blue-300' : ''
           }`}
