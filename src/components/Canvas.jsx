@@ -27,58 +27,81 @@ const Canvas = () => {
     const point = stage.getPointerPosition();
 
     if (tool === 'pen') {
-      const lastLine = lines[lines.length - 1];
-      lastLine.points = lastLine.points.concat([point.x, point.y]);
-      lines.splice(lines.length - 1, 1, lastLine);
-      setLines([...lines]);
-    } else {
-      // For shapes, we'll update the temporary preview
-      const shapes_copy = [...shapes];
-      console.log('shapes copy', shapes_copy);
+      setLines((prevLines) => {
+        const updatedLines = [...prevLines];
+        const lastLine = updatedLines[updatedLines.length - 1];
 
-      if (shapes_copy.length && isDrawing) {
-        shapes_copy.pop(); // Remove the previous preview
+        if (lastLine) {
+          lastLine.points = [...lastLine.points, point.x, point.y];
+          updatedLines[updatedLines.length - 1] = lastLine;
+        }
+
+        return updatedLines;
+      });
+    } else {
+      let updatedShapes = [...shapes];
+
+      // Remove previous temporary shape
+      if (
+        updatedShapes.length &&
+        updatedShapes[updatedShapes.length - 1].temp
+      ) {
+        updatedShapes.pop();
       }
 
-      // Add new preview shape
+      let newShape = null;
+
       if (tool === 'rectangle') {
-        shapes_copy.push({
+        newShape = {
           type: 'rectangle',
           x: startPos.x,
           y: startPos.y,
           width: point.x - startPos.x,
           height: point.y - startPos.y,
           color,
-        });
+          temp: true, // Mark it as temporary
+        };
       } else if (tool === 'circle') {
         const radius = Math.sqrt(
           Math.pow(point.x - startPos.x, 2) + Math.pow(point.y - startPos.y, 2),
         );
-        shapes_copy.push({
+        newShape = {
           type: 'circle',
           x: startPos.x,
           y: startPos.y,
           radius,
           color,
-        });
+          temp: true,
+        };
       } else if (tool === 'ellipse') {
-        const radiusX = Math.sqrt(Math.pow(point.x - startPos.x, 2));
-        const radiusY = Math.sqrt(Math.pow(point.y - startPos.y, 2));
-        shapes_copy.push({
+        const radiusX = Math.abs(point.x - startPos.x);
+        const radiusY = Math.abs(point.y - startPos.y);
+        newShape = {
           type: 'ellipse',
           x: startPos.x,
           y: startPos.y,
           radiusX,
           radiusY,
           color,
-        });
+          temp: true,
+        };
       }
-      setShapes(shapes_copy);
+
+      if (newShape) {
+        updatedShapes.push(newShape);
+        setShapes(updatedShapes);
+      }
     }
   };
 
   const handleMouseUp = () => {
     setIsDrawing(false);
+
+    if (shapes.length && shapes[shapes.length - 1].temp) {
+      const finalShape = { ...shapes[shapes.length - 1] };
+      delete finalShape.temp; // Remove temp flag
+      setShapes([...shapes.slice(0, -1), finalShape]); // Replace the last shape with final one
+    }
   };
 
   const clearCanvas = () => {
