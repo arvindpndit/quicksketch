@@ -7,6 +7,7 @@ const Canvas = () => {
   const [shapes, setShapes] = useState([]);
   const [lines, setLines] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [draggable, setDraggable] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [color, setColor] = useState('#000000');
 
@@ -52,6 +53,8 @@ const Canvas = () => {
       let newShape = null;
 
       if (tool === 'rectangle') {
+        setDraggable(false);
+
         newShape = {
           type: 'rectangle',
           x: startPos.x,
@@ -61,7 +64,11 @@ const Canvas = () => {
           color,
           temp: true, // Mark it as temporary
         };
+      } else if (tool === 'drag') {
+        //add the logic to make the object draggable
+        setDraggable(true);
       } else if (tool === 'circle') {
+        setDraggable(false);
         const radius = Math.sqrt(
           Math.pow(point.x - startPos.x, 2) + Math.pow(point.y - startPos.y, 2),
         );
@@ -74,6 +81,7 @@ const Canvas = () => {
           temp: true,
         };
       } else if (tool === 'ellipse') {
+        setDraggable(false);
         const radiusX = Math.abs(point.x - startPos.x);
         const radiusY = Math.abs(point.y - startPos.y);
         newShape = {
@@ -107,6 +115,17 @@ const Canvas = () => {
   const clearCanvas = () => {
     setLines([]);
     setShapes([]);
+    setDraggable(false);
+  };
+
+  const handleMouseEnter = (e) => {
+    const stage = e.target.getStage();
+    stage.container().style.cursor = 'grab';
+  };
+
+  const handleMouseLeave = (e) => {
+    const stage = e.target.getStage();
+    stage.container().style.cursor = 'default';
   };
 
   return (
@@ -138,6 +157,9 @@ const Canvas = () => {
               lineCap="round"
               lineJoin="round"
               globalCompositeOperation="source-over"
+              draggable={draggable}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             />
           ))}
           {shapes.map((shape, i) => {
@@ -151,6 +173,9 @@ const Canvas = () => {
                   height={shape.height}
                   stroke={shape.color}
                   strokeWidth={2}
+                  draggable={draggable}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
                 />
               );
             } else if (shape.type === 'circle') {
@@ -162,6 +187,9 @@ const Canvas = () => {
                   radius={shape.radius}
                   stroke={shape.color}
                   strokeWidth={2}
+                  draggable={draggable}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
                 />
               );
             } else if (shape.type === 'ellipse') {
@@ -174,6 +202,9 @@ const Canvas = () => {
                   radiusY={shape.radiusY}
                   stroke={shape.color}
                   strokeWidth={2}
+                  draggable={draggable}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
                 />
               );
             }

@@ -7,12 +7,21 @@ import { FaRegCircle } from 'react-icons/fa';
 import { LuPencil } from 'react-icons/lu';
 import { TbOvalVertical } from 'react-icons/tb';
 import { MdDeleteOutline } from 'react-icons/md';
+import { RiDragMove2Fill } from 'react-icons/ri';
 import { PiTextAa } from 'react-icons/pi';
 
 const Header = ({ tool, color, clearCanvas, setTool, setColor }) => {
   return (
     <div className="flex justify-center fixed z-50 m-5">
       <div className="flex gap-2 mb-4 border-gray-200 border  rounded-xl shadow-sm p-2">
+        <button
+          onClick={() => setTool('drag')}
+          className={`p-3 rounded-lg hover:bg-gray-200 hover:cursor-pointer ${
+            tool === 'drag' ? 'bg-blue-300' : ''
+          }`}
+        >
+          <RiDragMove2Fill />
+        </button>
         <button
           onClick={() => setTool('pen')}
           className={`p-3 rounded-lg hover:bg-gray-200 hover:cursor-pointer ${
