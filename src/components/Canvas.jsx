@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Line, Text, Rect, Circle, Ellipse } from 'react-konva';
 import Header from './Header';
+import Footer from './Footer';
 
 const Canvas = () => {
   const [tool, setTool] = useState('pen'); // pen, rectangle, circle
@@ -15,6 +16,47 @@ const Canvas = () => {
   const [inputValue, setInputValue] = useState('');
   const [inputPosition, setInputPosition] = useState({ x: 0, y: 0 });
   const inputRef = useRef(null);
+
+  //for undo redo
+  const [history, setHistory] = useState([
+    { shapes: [], lines: [], texts: [] },
+  ]);
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const saveToHistory = (newShapes, newLines, newTexts) => {
+    // Slice history up to current step to remove any redone states
+    const newHistory = history.slice(0, currentStep + 1);
+    // Add new state
+    newHistory.push({
+      shapes: newShapes,
+      lines: newLines,
+      texts: newTexts,
+    });
+    setHistory(newHistory);
+    setCurrentStep(newHistory.length - 1);
+  };
+
+  const undo = () => {
+    if (currentStep > 0) {
+      const newStep = currentStep - 1;
+      const previousState = history[newStep];
+      setShapes(previousState.shapes);
+      setLines(previousState.lines);
+      setTexts(previousState.texts);
+      setCurrentStep(newStep);
+    }
+  };
+
+  const redo = () => {
+    if (currentStep < history.length - 1) {
+      const newStep = currentStep + 1;
+      const nextState = history[newStep];
+      setShapes(nextState.shapes);
+      setLines(nextState.lines);
+      setTexts(nextState.texts);
+      setCurrentStep(newStep);
+    }
+  };
 
   const handleMouseDown = (e) => {
     setIsDrawing(true);
@@ -139,14 +181,31 @@ const Canvas = () => {
 
   const handleMouseUp = () => {
     setIsDrawing(false);
-
-    if (shapes.length && shapes[shapes.length - 1].temp) {
+    if (tool == 'pen') {
+      saveToHistory(shapes, lines, texts);
+    } else if (shapes.length && shapes[shapes.length - 1].temp) {
       const finalShape = { ...shapes[shapes.length - 1] };
       delete finalShape.temp; // Remove temp flag
-      setShapes([...shapes.slice(0, -1), finalShape]); // Replace the last shape with final one
+      const newShapes = [...shapes.slice(0, -1), finalShape];
+      setShapes(newShapes);
+      saveToHistory(newShapes, lines, texts); // Replace the last shape with final one
     }
   };
+  //keyboard shortcut for undo redo
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        if (e.shiftKey) {
+          redo();
+        } else {
+          undo();
+        }
+      }
+    };
 
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentStep, history]);
   const clearCanvas = () => {
     setLines([]);
     setShapes([]);
@@ -283,6 +342,13 @@ const Canvas = () => {
           }}
         />
       )}
+
+      <Footer
+        undo={undo}
+        redo={redo}
+        canUndo={currentStep > 0}
+        canRedo={currentStep < history.length - 1}
+      />
     </div>
   );
 };
