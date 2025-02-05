@@ -3,14 +3,14 @@ import { PiGithubLogoDuotone } from 'react-icons/pi';
 import { GrUndo, GrRedo } from 'react-icons/gr';
 import { FaMinus, FaPlus } from 'react-icons/fa6';
 
-const Footer = ({ undo, redo, canUndo, canRedo }) => {
+const Footer = ({ undo, redo, canUndo, canRedo, handleZoom, zoom }) => {
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-white shadow-md p-3 flex justify-between items-center">
+    <div className="fixed bottom-0 left-0 w-full z-50 shadow-md p-3 flex justify-between items-center">
       <div className="flex gap-4">
         <div className="bg-gray-200 p-2 rounded-lg flex items-center gap-2 hover:cursor-pointer">
-          <FaMinus />
-          <span>100%</span>
-          <FaPlus />
+          <FaMinus onClick={() => handleZoom('out')} />
+          <span>{Math.round(zoom * 100)}%</span>
+          <FaPlus onClick={() => handleZoom('in')} />
         </div>
         <div className="bg-gray-200 p-2 rounded-lg flex items-center gap-6  hover:cursor-pointer text-xl">
           <button

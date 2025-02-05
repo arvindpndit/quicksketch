@@ -16,6 +16,28 @@ const Canvas = () => {
   const [inputValue, setInputValue] = useState('');
   const [inputPosition, setInputPosition] = useState({ x: 0, y: 0 });
   const inputRef = useRef(null);
+  const [zoom, setZoom] = useState(1); // 1 = 100%
+  const [stageOffset, setStageOffset] = useState({ x: 0, y: 0 });
+
+  const getScaledPointerPosition = (stage) => {
+    const pointerPos = stage.getPointerPosition();
+    if (!pointerPos) return { x: 0, y: 0 };
+
+    const stageX = stage.x();
+    const stageY = stage.y();
+
+    return {
+      x: (pointerPos.x - stageX) / zoom,
+      y: (pointerPos.y - stageY) / zoom,
+    };
+  };
+
+  const handleZoom = (direction) => {
+    setZoom((prevZoom) => {
+      let newZoom = direction === 'in' ? prevZoom * 1.1 : prevZoom / 1.1;
+      return Math.min(3, Math.max(0.1, newZoom)); // Limits zoom between 10% and 300%
+    });
+  };
 
   //for undo redo
   const [history, setHistory] = useState([
@@ -60,7 +82,8 @@ const Canvas = () => {
 
   const handleMouseDown = (e) => {
     setIsDrawing(true);
-    const pos = e.target.getStage().getPointerPosition();
+    const stage = e.target.getStage();
+    const pos = getScaledPointerPosition(stage);
     setStartPos(pos);
 
     if (tool === 'pen') {
@@ -102,7 +125,7 @@ const Canvas = () => {
     if (!isDrawing) return;
 
     const stage = e.target.getStage();
-    const point = stage.getPointerPosition();
+    const point = getScaledPointerPosition(stage);
 
     if (tool === 'pen') {
       setLines((prevLines) => {
@@ -206,6 +229,7 @@ const Canvas = () => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [currentStep, history]);
+
   const clearCanvas = () => {
     setLines([]);
     setShapes([]);
@@ -226,7 +250,7 @@ const Canvas = () => {
   };
 
   return (
-    <div className="flex flex-col items-center ">
+    <div className="flex flex-col items-center overflow-hidden">
       <Header
         tool={tool}
         color={color}
@@ -237,7 +261,12 @@ const Canvas = () => {
       />
       <Stage
         width={window.innerWidth}
-        height={window.innerHeight}
+        height={window.innerHeight} // Adjust for footer height
+        scaleX={zoom}
+        scaleY={zoom}
+        offsetX={stageOffset.x}
+        offsetY={stageOffset.y}
+        draggable={draggable}
         onMouseDown={handleMouseDown}
         onMousemove={handleMouseMove}
         onMouseup={handleMouseUp}
@@ -250,7 +279,7 @@ const Canvas = () => {
               key={i}
               points={line.points}
               stroke={line.color}
-              strokeWidth={4}
+              strokeWidth={5 / zoom} // Adjust line thickness on zoom
               tension={0.1}
               lineCap="round"
               lineJoin="round"
@@ -284,7 +313,7 @@ const Canvas = () => {
                   y={shape.y}
                   radius={shape.radius}
                   stroke={shape.color}
-                  strokeWidth={2}
+                  strokeWidth={2 / zoom}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -315,7 +344,7 @@ const Canvas = () => {
               x={text.x}
               y={text.y}
               text={text.text}
-              fontSize={29}
+              fontSize={29 / zoom}
               fontFamily="Fredoka"
               fill={text.color}
               draggable={draggable}
@@ -348,6 +377,8 @@ const Canvas = () => {
         redo={redo}
         canUndo={currentStep > 0}
         canRedo={currentStep < history.length - 1}
+        handleZoom={handleZoom}
+        zoom={zoom}
       />
     </div>
   );
