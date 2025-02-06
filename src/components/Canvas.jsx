@@ -18,6 +18,7 @@ const Canvas = () => {
   const inputRef = useRef(null);
   const [zoom, setZoom] = useState(1); // 1 = 100%
   const [stageOffset, setStageOffset] = useState({ x: 0, y: 0 });
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
   const getScaledPointerPosition = (stage) => {
     const pointerPos = stage.getPointerPosition();
@@ -85,6 +86,15 @@ const Canvas = () => {
     const stage = e.target.getStage();
     const pos = getScaledPointerPosition(stage);
     setStartPos(pos);
+
+    const event = e.evt;
+    const clientX = event.clientX;
+    const clientY = event.clientY;
+    // Capture both stage and client coordinates
+    setCursorPosition({
+      x: clientX,
+      y: clientY,
+    });
 
     if (tool === 'pen') {
       setLines([...lines, { points: [pos.x, pos.y], color }]);
@@ -362,9 +372,9 @@ const Canvas = () => {
           onKeyDown={handleKeyDown}
           className="absolute px-2 py-1 text-2xl text-black"
           style={{
-            top: inputPosition.y,
-            left: inputPosition.x,
-            position: 'absolute',
+            top: cursorPosition.y,
+            left: cursorPosition.x,
+            position: 'fixed',
             zIndex: 10,
             background: 'white',
             outline: 'none',
