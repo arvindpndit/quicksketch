@@ -1,8 +1,35 @@
-# React + Vite
+# QuickSketch
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+QuickSketch is an open-source sketching tool built with React, Konva, and Tailwind CSS for a seamless drawing experience.
 
-Currently, two official plugins are available:
+## 🚀 Technologies Used
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React** – Component-based UI framework
+- **JavaScript** – Core programming language
+- **Tailwind CSS** – Utility-first styling
+- **Konva** – Canvas-based drawing library
+
+## 🛠️ Setup Instructions
+
+1. **Clone the repository:**
+
+   ```sh
+   git clone https://github.com/arvindpndit/quicksketch.git
+   cd quicksketch
+   ```
+
+2. **Install dependencies:**
+
+   ```sh
+   npm install
+   ```
+
+3. **Start the development server:**
+
+   ```sh
+   npm run dev
+   ```
+
+4. **Open in browser:**
+   Visit `http://localhost:5173` to start sketching!
+

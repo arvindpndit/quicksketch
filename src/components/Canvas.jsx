@@ -19,6 +19,11 @@ const Canvas = () => {
   const [zoom, setZoom] = useState(1); // 1 = 100%
   const [stageOffset, setStageOffset] = useState({ x: 0, y: 0 });
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  //for undo redo
+  const [history, setHistory] = useState([
+    { shapes: [], lines: [], texts: [] },
+  ]);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const getScaledPointerPosition = (stage) => {
     const pointerPos = stage.getPointerPosition();
@@ -39,12 +44,6 @@ const Canvas = () => {
       return Math.min(3, Math.max(0.1, newZoom)); // Limits zoom between 10% and 300%
     });
   };
-
-  //for undo redo
-  const [history, setHistory] = useState([
-    { shapes: [], lines: [], texts: [] },
-  ]);
-  const [currentStep, setCurrentStep] = useState(0);
 
   const saveToHistory = (newShapes, newLines, newTexts) => {
     // Slice history up to current step to remove any redone states
@@ -281,7 +280,7 @@ const Canvas = () => {
         onMousemove={handleMouseMove}
         onMouseup={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        className="border border-gray-300 bg-white rounded"
+        //className="border border-gray-300 bg-white rounded overflow-hidden"
       >
         <Layer>
           {lines.map((line, i) => (
@@ -289,7 +288,7 @@ const Canvas = () => {
               key={i}
               points={line.points}
               stroke={line.color}
-              strokeWidth={5 / zoom} // Adjust line thickness on zoom
+              strokeWidth={4 / zoom} // Adjust line thickness on zoom
               tension={0.1}
               lineCap="round"
               lineJoin="round"
@@ -309,7 +308,7 @@ const Canvas = () => {
                   width={shape.width}
                   height={shape.height}
                   stroke={shape.color}
-                  strokeWidth={2}
+                  strokeWidth={3 / zoom}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -323,7 +322,7 @@ const Canvas = () => {
                   y={shape.y}
                   radius={shape.radius}
                   stroke={shape.color}
-                  strokeWidth={2 / zoom}
+                  strokeWidth={3 / zoom}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -338,7 +337,7 @@ const Canvas = () => {
                   radiusX={shape.radiusX}
                   radiusY={shape.radiusY}
                   stroke={shape.color}
-                  strokeWidth={2}
+                  strokeWidth={3 / zoom}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}

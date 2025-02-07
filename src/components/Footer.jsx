@@ -5,7 +5,7 @@ import { FaMinus, FaPlus } from 'react-icons/fa6';
 
 const Footer = ({ undo, redo, canUndo, canRedo, handleZoom, zoom }) => {
   return (
-    <div className="fixed bottom-0 left-0 w-full z-50 shadow-md p-3 flex justify-between items-center">
+    <div className="fixed bottom-0 left-0 w-full shadow-md p-3 flex justify-between items-center">
       <div className="flex gap-4">
         <div className="bg-gray-200 p-2 rounded-lg flex items-center gap-2 hover:cursor-pointer">
           <FaMinus onClick={() => handleZoom('out')} />
@@ -30,10 +30,14 @@ const Footer = ({ undo, redo, canUndo, canRedo, handleZoom, zoom }) => {
         </div>
       </div>
 
-      <div className="bg-gray-200 hover:cursor-pointer hidden sm:flex gap-2 items-center p-2 rounded-lg font-sans-serif">
+      <a
+        className="bg-gray-200 hover:cursor-pointer hidden sm:flex gap-2 items-center p-2 rounded-lg font-sans-serif hover:underline"
+        href="https://github.com/arvindpndit/quicksketch"
+        target="_blank"
+      >
         <PiGithubLogoDuotone className="text-xl" />
-        <span>Created by Arvind</span>
-      </div>
+        <span>QuickSketch</span>
+      </a>
     </div>
   );
 };

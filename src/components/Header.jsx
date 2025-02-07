@@ -12,8 +12,8 @@ const Header = ({
   setDraggable,
 }) => {
   return (
-    <div className="flex justify-center fixed z-50 m-5 bg-white">
-      <div className="flex gap-2 mb-4 border-gray-200 border  rounded-xl shadow-sm p-2">
+    <div className="flex justify-center fixed z-50 m-5 bg-white rounded-xl">
+      <div className="flex gap-2 border-gray-200 border  rounded-xl shadow-sm p-2">
         <Tools tool={tool} setTool={setTool} setDraggable={setDraggable} />
         <input
           type="color"
