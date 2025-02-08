@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Stage, Layer, Line, Text, Rect, Circle, Ellipse } from 'react-konva';
+import {
+  Stage,
+  Layer,
+  Line,
+  Text,
+  Rect,
+  Circle,
+  Ellipse,
+  Arrow,
+} from 'react-konva';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -24,6 +33,8 @@ const Canvas = () => {
     { shapes: [], lines: [], texts: [] },
   ]);
   const [currentStep, setCurrentStep] = useState(0);
+
+  console.log('tool is', tool);
 
   const getScaledPointerPosition = (stage) => {
     const pointerPos = stage.getPointerPosition();
@@ -173,6 +184,22 @@ const Canvas = () => {
           color,
           temp: true, // Mark it as temporary
         };
+      } else if (tool == 'arrow') {
+        console.log('here');
+        setDraggable(false);
+        newShape = {
+          type: 'arrow',
+          x: startPos.x,
+          y: startPos.y,
+          points: [0, 0, point.x - startPos.x, point.y - startPos.y],
+          pointerLength: 10,
+          pointerWidth: 10,
+          fill: color,
+          color,
+          strokeWidth: 4,
+          temp: true,
+        };
+        console.log(newShape);
       } else if (tool === 'drag') {
         //add the logic to make the object draggable
         setDraggable(true);
@@ -337,6 +364,23 @@ const Canvas = () => {
                   radiusX={shape.radiusX}
                   radiusY={shape.radiusY}
                   stroke={shape.color}
+                  strokeWidth={3 / zoom}
+                  draggable={draggable}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                />
+              );
+            } else if (shape.type === 'arrow') {
+              return (
+                <Arrow
+                  key={i}
+                  x={shape.x}
+                  y={shape.y}
+                  stroke={shape.color}
+                  fill={shape.fill}
+                  points={shape.points}
+                  pointerLength={shape.pointerLength}
+                  pointerWidth={shape.pointerWidth}
                   strokeWidth={3 / zoom}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}

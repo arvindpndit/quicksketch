@@ -4,6 +4,7 @@ import { LuPencil } from 'react-icons/lu';
 import { TbOvalVertical } from 'react-icons/tb';
 import { RiDragMove2Fill } from 'react-icons/ri';
 import { IoText } from 'react-icons/io5';
+import { MdArrowOutward } from 'react-icons/md';
 import ToolButton from './ToolButton';
 
 const Tools = ({ tool, setTool, setDraggable }) => {
@@ -29,6 +30,13 @@ const Tools = ({ tool, setTool, setDraggable }) => {
         setTool={setTool}
         setDraggable={setDraggable}
         icon={<IoText />}
+      />
+      <ToolButton
+        label="arrow"
+        tool={tool}
+        setTool={setTool}
+        setDraggable={setDraggable}
+        icon={<MdArrowOutward />}
       />
       <ToolButton
         label="rectangle"
