@@ -11,6 +11,7 @@ import {
 } from 'react-konva';
 import Header from './Header';
 import Footer from './Footer';
+import StrokeWidthContainer from './tools/StrokeWidthContainer';
 
 const Canvas = () => {
   const [tool, setTool] = useState('pen'); // pen, rectangle, circle
@@ -33,8 +34,7 @@ const Canvas = () => {
     { shapes: [], lines: [], texts: [] },
   ]);
   const [currentStep, setCurrentStep] = useState(0);
-
-  console.log('tool is', tool);
+  const [strokeWidth, setStrokeWidth] = useState(4); //set to normal thickness
 
   const getScaledPointerPosition = (stage) => {
     const pointerPos = stage.getPointerPosition();
@@ -185,7 +185,6 @@ const Canvas = () => {
           temp: true, // Mark it as temporary
         };
       } else if (tool == 'arrow') {
-        console.log('here');
         setDraggable(false);
         newShape = {
           type: 'arrow',
@@ -196,10 +195,8 @@ const Canvas = () => {
           pointerWidth: 10,
           fill: color,
           color,
-          strokeWidth: 4,
           temp: true,
         };
-        console.log(newShape);
       } else if (tool === 'drag') {
         //add the logic to make the object draggable
         setDraggable(true);
@@ -295,6 +292,12 @@ const Canvas = () => {
         setColor={setColor}
         setDraggable={setDraggable}
       />
+      {tool === 'drag' || tool === 'text' ? null : (
+        <StrokeWidthContainer
+          strokeWidth={strokeWidth}
+          setStrokeWidth={setStrokeWidth}
+        />
+      )}
       <Stage
         width={window.innerWidth}
         height={window.innerHeight} // Adjust for footer height
@@ -315,7 +318,7 @@ const Canvas = () => {
               key={i}
               points={line.points}
               stroke={line.color}
-              strokeWidth={4 / zoom} // Adjust line thickness on zoom
+              strokeWidth={strokeWidth / zoom} // Adjust line thickness on zoom
               tension={0.1}
               lineCap="round"
               lineJoin="round"
@@ -335,7 +338,7 @@ const Canvas = () => {
                   width={shape.width}
                   height={shape.height}
                   stroke={shape.color}
-                  strokeWidth={3 / zoom}
+                  strokeWidth={strokeWidth / zoom}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -349,7 +352,7 @@ const Canvas = () => {
                   y={shape.y}
                   radius={shape.radius}
                   stroke={shape.color}
-                  strokeWidth={3 / zoom}
+                  strokeWidth={strokeWidth / zoom}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -364,7 +367,7 @@ const Canvas = () => {
                   radiusX={shape.radiusX}
                   radiusY={shape.radiusY}
                   stroke={shape.color}
-                  strokeWidth={3 / zoom}
+                  strokeWidth={strokeWidth / zoom}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -381,7 +384,7 @@ const Canvas = () => {
                   points={shape.points}
                   pointerLength={shape.pointerLength}
                   pointerWidth={shape.pointerWidth}
-                  strokeWidth={3 / zoom}
+                  strokeWidth={strokeWidth / zoom}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
