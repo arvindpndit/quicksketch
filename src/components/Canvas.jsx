@@ -107,7 +107,10 @@ const Canvas = () => {
     });
 
     if (tool === 'pen') {
-      setLines([...lines, { points: [pos.x, pos.y], color }]);
+      setLines([
+        ...lines,
+        { points: [pos.x, pos.y], color, strokeWidth: strokeWidth / zoom },
+      ]);
     } else if (tool === 'text') {
       setDraggable(false);
       setInputPosition({ x: pos.x, y: pos.y });
@@ -148,6 +151,7 @@ const Canvas = () => {
     const point = getScaledPointerPosition(stage);
 
     if (tool === 'pen') {
+      stage.container().style.cursor = 'crosshair';
       setLines((prevLines) => {
         const updatedLines = [...prevLines];
         const lastLine = updatedLines[updatedLines.length - 1];
@@ -229,7 +233,7 @@ const Canvas = () => {
       }
 
       if (newShape) {
-        updatedShapes.push(newShape);
+        updatedShapes.push({ ...newShape, strokeWidth: strokeWidth / zoom });
         setShapes(updatedShapes);
       }
     }
@@ -274,6 +278,7 @@ const Canvas = () => {
     if (draggable) {
       const stage = e.target.getStage();
       stage.container().style.cursor = 'grab';
+      if (tool === 'pen') stage.container().style.cursor = 'crosshair';
     }
   };
 
@@ -318,7 +323,7 @@ const Canvas = () => {
               key={i}
               points={line.points}
               stroke={line.color}
-              strokeWidth={strokeWidth / zoom} // Adjust line thickness on zoom
+              strokeWidth={line.strokeWidth} // Adjust line thickness on zoom
               tension={0.1}
               lineCap="round"
               lineJoin="round"
@@ -338,7 +343,7 @@ const Canvas = () => {
                   width={shape.width}
                   height={shape.height}
                   stroke={shape.color}
-                  strokeWidth={strokeWidth / zoom}
+                  strokeWidth={shape.strokeWidth}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -352,7 +357,7 @@ const Canvas = () => {
                   y={shape.y}
                   radius={shape.radius}
                   stroke={shape.color}
-                  strokeWidth={strokeWidth / zoom}
+                  strokeWidth={shape.strokeWidth}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -367,7 +372,7 @@ const Canvas = () => {
                   radiusX={shape.radiusX}
                   radiusY={shape.radiusY}
                   stroke={shape.color}
-                  strokeWidth={strokeWidth / zoom}
+                  strokeWidth={shape.strokeWidth}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
@@ -384,7 +389,7 @@ const Canvas = () => {
                   points={shape.points}
                   pointerLength={shape.pointerLength}
                   pointerWidth={shape.pointerWidth}
-                  strokeWidth={strokeWidth / zoom}
+                  strokeWidth={shape.strokeWidth}
                   draggable={draggable}
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
